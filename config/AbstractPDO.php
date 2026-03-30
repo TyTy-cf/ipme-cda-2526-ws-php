@@ -20,6 +20,22 @@ abstract class AbstractPDO
         );
     }
 
+    protected function getOneOrNullResult(PDOStatement $query): object|null {
+        if (false === $result = $query->fetchObject($this->ns)) {
+            $result = null;
+        }
+
+        return $result;
+    }
+
+    public function findOneById(int $id): object|null
+    {
+        $query = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE id = ?");
+        $query->bindValue(1, $id, PDO::PARAM_INT);
+        $query->execute();
+        return $this->getOneOrNullResult($query);
+    }
+
     public function findAll(): array
     {
         $query = $this->pdo->query("SELECT * FROM {$this->table}");
